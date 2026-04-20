@@ -7,6 +7,11 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#000000",
+    "extra": {
+      "eas": {
+        "projectId": "9bb42eb3-2ffe-46d1-abf5-cbb01e8de050"
+      }
+    },
     "android": {
       "package": "com.yourname.aifitnesspro",
       "adaptiveIcon": {
