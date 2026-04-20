@@ -28,6 +28,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build
-        # Removed the problematic flag to let EAS handle it naturally
-        run: eas build --platform android --profile preview --non-interactive
+      - name: Configure Credentials and Build
+        run: |
+          # This command creates the keystore on Expo's servers so the build doesn't have to
+          eas build --platform android --profile preview --non-interactive --no-wait || true
+          # Now that the keystore exists, the actual build can run
+          eas build --platform android --profile preview --non-interactive
