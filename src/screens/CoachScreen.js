@@ -1,14 +1,26 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, ActivityIndicator, Alert } from 'react-native';
 import { Sparkles, Dumbbell, Target } from 'lucide-react-native';
+import { generateSystemPrompt } from '../logic/aiEngine';
 
-/**
- * CoachScreen: Interface for AI workout generation and equipment selection.
- * Mimics the Strong app's clean card layout.
- */
 export default function CoachScreen() {
   const [equipment, setEquipment] = useState('');
   const [goal, setGoal] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleGeneratePlan = async () => {
+    if (!equipment || !goal) {
+      Alert.alert("Missing Info", "Please list your equipment and goal first.");
+      return;
+    }
+    setLoading(true);
+    
+    // Logic for calling the AI will be inserted here once we set up the API key storage
+    setTimeout(() => {
+      setLoading(false);
+      Alert.alert("AI Engine Initialized", "The AI is ready to generate your plan based on " + equipment);
+    }, 2000);
+  };
 
   return (
     <View style={styles.container}>
@@ -43,9 +55,19 @@ export default function CoachScreen() {
           />
         </View>
 
-        <TouchableOpacity style={styles.aiButton}>
-          <Sparkles color="#fff" size={20} />
-          <Text style={styles.buttonText}>GENERATE OPTIMIZED PLAN</Text>
+        <TouchableOpacity 
+          style={styles.aiButton} 
+          onPress={handleGeneratePlan}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <>
+              <Sparkles color="#fff" size={20} />
+              <Text style={styles.buttonText}>GENERATE OPTIMIZED PLAN</Text>
+            </>
+          )}
         </TouchableOpacity>
       </ScrollView>
     </View>
