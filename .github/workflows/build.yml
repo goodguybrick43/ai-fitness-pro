@@ -28,10 +28,5 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Initialize Credentials
-        # This command forces the creation of the remote Keystore
-        run: eas build --platform android --profile preview --non-interactive --no-wait
-
-      - name: Actual Build
-        # Now that the credentials have been initialized, we run the real build
+      - name: Build
         run: eas build --platform android --profile preview --non-interactive
