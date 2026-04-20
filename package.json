@@ -16,6 +16,8 @@
     "react-native-screens": "~3.29.0",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/bottom-tabs": "^6.5.11",
+    "@react-navigation/native-stack": "^6.9.17",
+    "react-native-svg": "14.1.0",
     "lucide-react-native": "*",
     "openai": "^4.0.0"
   },
