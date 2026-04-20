@@ -15,20 +15,15 @@ jobs:
         with:
           node-version: 18
 
-      - name: Setup Expo
-        uses: expo/expo-github-action@v8
-        with:
-          expo-version: latest
-          eas-cache: true
-
       - name: Install EAS CLI
         run: npm install -g eas-cli
 
       - name: Install dependencies
         run: npm install
 
-      - name: Build APK (Preview)
-        # GitHub swaps the variable below with your real secret during the run
+      - name: Verify Login and Build
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: eas build --platform android --profile preview --non-interactive
+        run: |
+          eas whoami
+          eas build --platform android --profile preview --non-interactive
