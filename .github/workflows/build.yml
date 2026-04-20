@@ -28,10 +28,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Force Credential Generation
-        # This command forces Expo to create the Keystore for your 'preview' profile
+      - name: Initialize Credentials
+        # This command forces the creation of the remote Keystore
         run: eas build --platform android --profile preview --non-interactive --no-wait
 
-      - name: Final Build Attempt
-        # Now that the credentials were triggered in the step above, this should proceed
+      - name: Actual Build
+        # Now that the credentials have been initialized, we run the real build
         run: eas build --platform android --profile preview --non-interactive
