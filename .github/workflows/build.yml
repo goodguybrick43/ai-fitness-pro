@@ -21,10 +21,13 @@ jobs:
           expo-version: latest
           eas-cache: true
 
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
       - name: Install dependencies
         run: npm install
 
       - name: Build APK (Preview)
-        run: npx eas build --platform android --profile preview --non-interactive
+        run: eas build --platform android --profile preview --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
