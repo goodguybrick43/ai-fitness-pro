@@ -3,6 +3,9 @@ on:
   push:
     branches: [ main ]
 
+env:
+  EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,8 +25,6 @@ jobs:
         run: npm install
 
       - name: Verify Login and Build
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
           eas whoami
           eas build --platform android --profile preview --non-interactive
