@@ -2,7 +2,7 @@
   "expo": {
     "name": "AI Fitness Pro",
     "slug": "ai-fitness-pro",
-    "owner": "goodguybrick43",
+    "owner": "goodguybrick",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -14,7 +14,7 @@
       }
     },
     "android": {
-      "package": "com.goodguybrick43.aifitnesspro",
+      "package": "com.goodguybrick.aifitnesspro",
       "adaptiveIcon": {
         "backgroundColor": "#000000"
       }
