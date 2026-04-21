@@ -28,9 +28,27 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Force Create Config Files
-        # This creates the eas.json on the fly so mobile-formatting can't break it
+      - name: Force Clean Config Files
+        # This writes fresh, clean JSON files to bypass mobile formatting issues
         run: |
+          cat > app.json <<EOF
+          {
+            "expo": {
+              "name": "AI Fitness Pro",
+              "slug": "ai-fitness-pro",
+              "owner": "goodguybrick",
+              "version": "1.0.0",
+              "extra": {
+                "eas": {
+                  "projectId": "9bb42eb3-2ffe-46d1-abf5-cbb01e8de050"
+                }
+              },
+              "android": {
+                "package": "com.goodguybrick.aifitnesspro"
+              }
+            }
+          }
+          EOF
           cat > eas.json <<EOF
           {
             "build": {
@@ -44,5 +62,4 @@ jobs:
           EOF
 
       - name: Build APK
-        # Now we run the build using the file we just created
         run: eas build --platform android --profile preview --non-interactive
