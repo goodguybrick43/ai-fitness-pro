@@ -1,3 +1,24 @@
+name: build
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
       - name: Fix Missing Assets and Configs
         run: |
           # 1. Create the assets folder
@@ -6,6 +27,7 @@
           # 2. Create a dummy icon AND a dummy splash image
           echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==" | base64 -d > assets/icon.png
           cp assets/icon.png assets/splash.png
+          cp assets/icon.png assets/adaptive-icon.png
           
           # 3. Write a COMPLETE app.json including splash settings
           echo '{
@@ -25,7 +47,7 @@
               },
               "android": {
                 "adaptiveIcon": {
-                  "foregroundImage": "./assets/icon.png",
+                  "foregroundImage": "./assets/adaptive-icon.png",
                   "backgroundColor": "#ffffff"
                 },
                 "package": "com.goodguybrick.aifitnesspro"
@@ -40,3 +62,11 @@
           
           # 4. Ensure eas.json exists
           echo '{"build":{"preview":{"android":{"buildType":"apk"}}}}' > eas.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build APK
+        run: eas build --platform android --profile preview --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
