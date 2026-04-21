@@ -1,47 +1,42 @@
-name: Build APK
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Setup Expo
-        uses: expo/expo-github-action@v8
-        with:
-          expo-version: latest
-          token: ${{ secrets.EAS_NO_VARS_TOKEN }}
-
-      - name: Install EAS CLI
-        run: npm install -g eas-cli
-
-      - name: Install dependencies
-        run: npm install
-
       - name: Fix Missing Assets and Configs
         run: |
-          # 1. Create the assets folder if it doesn't exist
+          # 1. Create the assets folder
           mkdir -p assets
           
-          # 2. Create a tiny blank icon so the build doesn't crash
-          # This creates a 1x1 pixel valid PNG file
+          # 2. Create a dummy icon AND a dummy splash image
           echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==" | base64 -d > assets/icon.png
+          cp assets/icon.png assets/splash.png
           
-          # 3. Write a clean app.json that points to this icon
-          echo '{"expo":{"name":"AI Fitness Pro","slug":"ai-fitness-pro","owner":"goodguybrick","version":"1.0.0","icon":"./assets/icon.png","extra":{"eas":{"projectId":"9bb42eb3-2ffe-46d1-abf5-cbb01e8de050"}},"android":{"package":"com.goodguybrick.aifitnesspro"}}}' > app.json
+          # 3. Write a COMPLETE app.json including splash settings
+          echo '{
+            "expo": {
+              "name": "AI Fitness Pro",
+              "slug": "ai-fitness-pro",
+              "version": "1.0.0",
+              "owner": "goodguybrick",
+              "icon": "./assets/icon.png",
+              "splash": {
+                "image": "./assets/splash.png",
+                "resizeMode": "contain",
+                "backgroundColor": "#ffffff"
+              },
+              "ios": {
+                "supportsTablet": true
+              },
+              "android": {
+                "adaptiveIcon": {
+                  "foregroundImage": "./assets/icon.png",
+                  "backgroundColor": "#ffffff"
+                },
+                "package": "com.goodguybrick.aifitnesspro"
+              },
+              "extra": {
+                "eas": {
+                  "projectId": "9bb42eb3-2ffe-46d1-abf5-cbb01e8de050"
+                }
+              }
+            }
+          }' > app.json
           
           # 4. Ensure eas.json exists
           echo '{"build":{"preview":{"android":{"buildType":"apk"}}}}' > eas.json
-
-      - name: Build APK
-        run: eas build --platform android --profile preview --non-interactive
