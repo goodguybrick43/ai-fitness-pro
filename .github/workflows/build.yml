@@ -28,31 +28,20 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Safely Fix App Configs
-        # This script fixes your mobile quotes and injects the ID without deleting your camera plugins
+      - name: Fix Missing Assets and Configs
         run: |
-          cat > fix-config.js << 'EOF'
-          const fs = require('fs');
-          let rawApp = fs.readFileSync('app.json', 'utf8');
+          # 1. Create the assets folder if it doesn't exist
+          mkdir -p assets
           
-          // Scrub any invisible mobile characters or smart quotes
-          rawApp = rawApp.replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, "'");
+          # 2. Create a tiny blank icon so the build doesn't crash
+          # This creates a 1x1 pixel valid PNG file
+          echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==" | base64 -d > assets/icon.png
           
-          let appData = JSON.parse(rawApp);
-          appData.expo = appData.expo || {};
-          appData.expo.extra = appData.expo.extra || {};
-          appData.expo.extra.eas = { projectId: '9bb42eb3-2ffe-46d1-abf5-cbb01e8de050' };
+          # 3. Write a clean app.json that points to this icon
+          echo '{"expo":{"name":"AI Fitness Pro","slug":"ai-fitness-pro","owner":"goodguybrick","version":"1.0.0","icon":"./assets/icon.png","extra":{"eas":{"projectId":"9bb42eb3-2ffe-46d1-abf5-cbb01e8de050"}},"android":{"package":"com.goodguybrick.aifitnesspro"}}}' > app.json
           
-          fs.writeFileSync('app.json', JSON.stringify(appData, null, 2));
-          EOF
-          node fix-config.js
-          
-          # Overwrite eas.json safely
-          echo '{"build":{"preview":{"android":{"buildType":"apk"}},"production":{}}}' > eas.json
+          # 4. Ensure eas.json exists
+          echo '{"build":{"preview":{"android":{"buildType":"apk"}}}}' > eas.json
 
-      - name: Delete Corrupted Native Folders
-        # This forces Expo to generate a completely fresh, properly linked Android build
-        run: rm -rf android ios
-
-      - name: Build APK (with Cache Clear)
-        run: eas build --platform android --profile preview --non-interactive --clear-cache
+      - name: Build APK
+        run: eas build --platform android --profile preview --non-interactive
