@@ -28,11 +28,31 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Force Clean Configs
+      - name: Safely Fix App Configs
+        # This script fixes your mobile quotes and injects the ID without deleting your camera plugins
         run: |
-          echo '{"expo":{"name":"AI Fitness Pro","slug":"ai-fitness-pro","owner":"goodguybrick","version":"1.0.0","orientation":"portrait","userInterfaceStyle":"dark","extra":{"eas":{"projectId":"9bb42eb3-2ffe-46d1-abf5-cbb01e8de050"}},"android":{"package":"com.goodguybrick.aifitnesspro","adaptiveIcon":{"backgroundColor":"#000000"}}}}' > app.json
+          cat > fix-config.js << 'EOF'
+          const fs = require('fs');
+          let rawApp = fs.readFileSync('app.json', 'utf8');
+          
+          // Scrub any invisible mobile characters or smart quotes
+          rawApp = rawApp.replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, "'");
+          
+          let appData = JSON.parse(rawApp);
+          appData.expo = appData.expo || {};
+          appData.expo.extra = appData.expo.extra || {};
+          appData.expo.extra.eas = { projectId: '9bb42eb3-2ffe-46d1-abf5-cbb01e8de050' };
+          
+          fs.writeFileSync('app.json', JSON.stringify(appData, null, 2));
+          EOF
+          node fix-config.js
+          
+          # Overwrite eas.json safely
           echo '{"build":{"preview":{"android":{"buildType":"apk"}},"production":{}}}' > eas.json
 
+      - name: Delete Corrupted Native Folders
+        # This forces Expo to generate a completely fresh, properly linked Android build
+        run: rm -rf android ios
+
       - name: Build APK (with Cache Clear)
-        # Added --clear-cache to nuke any corrupted files on Expo's end
         run: eas build --platform android --profile preview --non-interactive --clear-cache
