@@ -28,14 +28,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Generate Configs and Build
-        # We do everything in one 'run' block to guarantee the files are perfect
+      - name: Force Clean Configs
         run: |
-          echo '{"expo":{"name":"AI Fitness Pro","slug":"ai-fitness-pro","owner":"goodguybrick","version":"1.0.0","extra":{"eas":{"projectId":"9bb42eb3-2ffe-46d1-abf5-cbb01e8de050"}},"android":{"package":"com.goodguybrick.aifitnesspro"}}}' > app.json
+          echo '{"expo":{"name":"AI Fitness Pro","slug":"ai-fitness-pro","owner":"goodguybrick","version":"1.0.0","orientation":"portrait","userInterfaceStyle":"dark","extra":{"eas":{"projectId":"9bb42eb3-2ffe-46d1-abf5-cbb01e8de050"}},"android":{"package":"com.goodguybrick.aifitnesspro","adaptiveIcon":{"backgroundColor":"#000000"}}}}' > app.json
           echo '{"build":{"preview":{"android":{"buildType":"apk"}},"production":{}}}' > eas.json
-          
-          echo "--- Verifying Files ---"
-          cat eas.json
-          
-          echo "--- Starting Build ---"
-          eas build --platform android --profile preview --non-interactive
+
+      - name: Build APK (with Cache Clear)
+        # Added --clear-cache to nuke any corrupted files on Expo's end
+        run: eas build --platform android --profile preview --non-interactive --clear-cache
