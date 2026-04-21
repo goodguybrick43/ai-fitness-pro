@@ -28,19 +28,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Force Clean Configs
-        # Writing everything on one line to prevent mobile formatting errors
+      - name: Generate Configs and Build
+        # We do everything in one 'run' block to guarantee the files are perfect
         run: |
           echo '{"expo":{"name":"AI Fitness Pro","slug":"ai-fitness-pro","owner":"goodguybrick","version":"1.0.0","extra":{"eas":{"projectId":"9bb42eb3-2ffe-46d1-abf5-cbb01e8de050"}},"android":{"package":"com.goodguybrick.aifitnesspro"}}}' > app.json
-          echo '{"build":{"preview":{"android":{"buildType":"apk"}}}}' > eas.json
-
-      - name: Debug Configs
-        # This will show us exactly what the files look like in the log
-        run: |
-          echo "--- app.json ---"
-          cat app.json
-          echo -e "\n--- eas.json ---"
+          echo '{"build":{"preview":{"android":{"buildType":"apk"}},"production":{}}}' > eas.json
+          
+          echo "--- Verifying Files ---"
           cat eas.json
-
-      - name: Build APK
-        run: eas build --platform android --profile preview --non-interactive
+          
+          echo "--- Starting Build ---"
+          eas build --platform android --profile preview --non-interactive
