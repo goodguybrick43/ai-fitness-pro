@@ -28,5 +28,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build
+      - name: Build APK
+        # We are pointing it exactly to the 'preview' we just defined
         run: eas build --platform android --profile preview --non-interactive
