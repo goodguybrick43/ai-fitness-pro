@@ -28,6 +28,21 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Force Create Config Files
+        # This creates the eas.json on the fly so mobile-formatting can't break it
+        run: |
+          cat > eas.json <<EOF
+          {
+            "build": {
+              "preview": {
+                "android": {
+                  "buildType": "apk"
+                }
+              }
+            }
+          }
+          EOF
+
       - name: Build APK
-        # We are pointing it exactly to the 'preview' we just defined
+        # Now we run the build using the file we just created
         run: eas build --platform android --profile preview --non-interactive
